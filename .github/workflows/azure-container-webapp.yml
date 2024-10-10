@@ -1,0 +1,52 @@
+name: Build and deploy a container to an Azure Web App
+
+env:
+  AZURE_WEBAPP_NAME: appscg  # set this to the name of your Azure Web App
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ secrets.RG_URL }}
+        username: ${{ secrets.RG_USERNAME }}
+        password: ${{ secrets.RG_PASSWORD }}
+    - run: |
+        docker build . -t ${{ secrets.RG_URL }}/${{ secrets.RG_USERNAME }}/${{ env.AZURE_WEBAPP_NAME }}:${{ github.sha }}
+        docker push ${{ secrets.RG_URL }}/${{ secrets.RG_USERNAME }}/${{ env.AZURE_WEBAPP_NAME }}:${{ github.sha }}
+
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   # checkout the repo
+  #   - name: 'Checkout GitHub Action' 
+  #     uses: actions/checkout@main
+    
+  #   - name: 'Sign in via Azure CLI'
+  #     uses: azure/login@v1
+  #     with:
+  #       client-id: ${{ secrets.AZURE_CLIENT_ID }}
+  #       tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+  #       subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          
+  #   - uses: azure/webapps-deploy@v2
+  #     with:
+  #       app-name: ${{ env.AZURE_WEBAPP_NAME }}
+  #       images: ${{ secrets.RG_URL }}/${{ secrets.RG_USERNAME }}/${{ env.AZURE_WEBAPP_NAME }}:${{ github.sha }}
+    
+  #   - name: Azure logout
+  #     run: |
+  #       az logout
