@@ -24,8 +24,8 @@ jobs:
         username: ${{ secrets.RG_USERNAME }}
         password: ${{ secrets.RG_PASSWORD }}
     - run: |
-        docker build . -t ${{ secrets.RG_URL }}/${{ secrets.RG_USERNAME }}/${{ env.AZURE_WEBAPP_NAME }}:${{ github.sha }}
-        # docker push ${{ secrets.RG_URL }}/${{ secrets.RG_USERNAME }}/${{ env.AZURE_WEBAPP_NAME }}:${{ github.sha }}
+        docker build . -t ${{ secrets.RG_URL }}/${{ secrets.RG_USERNAME }}/${{ env.AZURE_WEBAPP_NAME }}:v1
+        docker push ${{ secrets.RG_URL }}/${{ secrets.RG_USERNAME }}/${{ env.AZURE_WEBAPP_NAME }}:v1
 
 
   # deploy:
